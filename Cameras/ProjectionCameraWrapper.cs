@@ -42,7 +42,7 @@ namespace WPF3D.Cameras
 
         public double RelPositionTheta // degrees
         {
-            get {return Math.Atan2 (RelPosition.Y, RelPosition.X) * 180 / Math.PI;} // degrees
+            get {return Math.Atan2 (RelPosition.Y, RelPosition.X) * 180 / Math.PI;}
 
             set
             {
