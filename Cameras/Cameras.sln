@@ -5,7 +5,10 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cameras", "Cameras.csproj", "{6980EFF8-A0DA-4A12-AF4F-8378AA0AFBA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "..\UnitTest\UnitTest.csproj", "{4DECD158-2464-4878-AC02-5239654BE4DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utCameras1", "..\utCameras1\utCameras1.csproj", "{C7F9C593-0DB5-4510-9AB1-61DA78EB4224}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6980EFF8-A0DA-4A12-AF4F-8378AA0AFBA2} = {6980EFF8-A0DA-4A12-AF4F-8378AA0AFBA2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +20,10 @@ Global
 		{6980EFF8-A0DA-4A12-AF4F-8378AA0AFBA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6980EFF8-A0DA-4A12-AF4F-8378AA0AFBA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6980EFF8-A0DA-4A12-AF4F-8378AA0AFBA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DECD158-2464-4878-AC02-5239654BE4DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DECD158-2464-4878-AC02-5239654BE4DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DECD158-2464-4878-AC02-5239654BE4DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DECD158-2464-4878-AC02-5239654BE4DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7F9C593-0DB5-4510-9AB1-61DA78EB4224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7F9C593-0DB5-4510-9AB1-61DA78EB4224}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7F9C593-0DB5-4510-9AB1-61DA78EB4224}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7F9C593-0DB5-4510-9AB1-61DA78EB4224}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

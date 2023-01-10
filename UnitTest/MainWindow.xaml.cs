@@ -18,11 +18,35 @@ using WPF3D.Cameras;
 
 namespace UnitTest
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        Point3D [] convexPoints = {
+            new Point3D (0.707, 0.707, -4.0), new Point3D (0.707, 0.707, 0.0), new Point3D (0.383, 0.924, -4.0), new Point3D (0.383, 0.924, 0.0),
+            new Point3D (0.383, 0.924, -4.0), new Point3D (0.383, 0.924, 0),   new Point3D (0, 1, -4),           new Point3D (0, 1, 0),
+            new Point3D (0, 1.0, -4.0),       new Point3D (0, 1, 0),           new Point3D (-0.383, 0.924, -4),  new Point3D (-0.383, 0.924, 0), 
+            new Point3D (-0.383, 0.924, -4),  new Point3D (-0.383, 0.924, 0),  new Point3D (-0.707, 0.707, -4),  new Point3D (-0.707, 0.707, 0),
+        };
+
+        int [] convexTriangles = {
+             0,  2,  1,   1,  2,  3,
+             4,  6,  5,   5,  6,  7,
+             8, 10,  9,   9, 10, 11,
+            12, 14, 13,  13, 14, 15
+        };
+
+        MeshGeometry3D  mesh   = new MeshGeometry3D ();
+        GeometryModel3D model  = new GeometryModel3D ();
+        ModelVisual3D   visual = new ModelVisual3D ();
+
+        // transform for model rotation 
+        AxisAngleRotation3D AAR = new AxisAngleRotation3D ();
+        RotateTransform3D? rot = null;
+
+        AmbientLight     ambient  = new AmbientLight ((Color)ColorConverter.ConvertFromString ("#404040"));
+        DirectionalLight dir      = new DirectionalLight ((Color)ColorConverter.ConvertFromString ("#c0c0c0"), new Vector3D (2, -3, -1));
+        Model3DGroup     lighting = new Model3DGroup ();
+        ModelVisual3D    lightingVisual = new ModelVisual3D ();
+
         public MainWindow ()
         {
             InitializeComponent ();
@@ -30,26 +54,34 @@ namespace UnitTest
 
         private void Window_Loaded (object sender, RoutedEventArgs e)
         {
-            Console.WriteLine ("Unit Test here");
-
             try
             {
-                ProjectionCameraWrapper camera = new ProjectionCameraWrapper ();
 
-                //Console.WriteLine (string.Format ("Right {0:0.00}", camera.Right));
-                //Console.WriteLine (string.Format ("Up {0:0.00}", camera.Up));
+                mesh.Positions = new Point3DCollection (convexPoints);
+                mesh.TriangleIndices = new Int32Collection (convexTriangles);
 
-                Console.WriteLine (string.Format ("abs {0:0.00}", camera.AbsPosition));
-                Console.WriteLine (string.Format ("rho {0:0.00}", camera.RelPositionRho));
-                //Console.WriteLine (string.Format ("rho {0:0.00}", camera.RelPosition));
-                Console.WriteLine ("----------------------");
+                model.Geometry = mesh;
+                model.Material = new DiffuseMaterial (Brushes.Cyan);
+                model.BackMaterial = new DiffuseMaterial (Brushes.Pink);
 
-                camera.RelPositionRho = 20;
+                AAR.Axis = new Vector3D (1, 0, 0);
+                rot = new RotateTransform3D (AAR);
+                rot.CenterZ = -2;
+                model.Transform = rot;
 
-                Console.WriteLine (string.Format ("abs {0:0.00}", camera.AbsPosition));
-                Console.WriteLine (string.Format ("rho {0:0.00}", camera.RelPositionRho));
-                //Console.WriteLine (string.Format ("rho {0:0.00}", camera.RelPosition));
-                Console.WriteLine ("----------------------");
+                visual.Content = model;
+
+                lighting.Children.Add (ambient);
+                lighting.Children.Add (dir);
+                lightingVisual.Content = lighting;
+
+                // camera
+                view.Camera = new PerspectiveCamera (new Point3D (-2, 4, 4),
+                                                     new Vector3D (0.4, -0.55, -1),
+                                                     new Vector3D (0, 1, 0),
+                                                     30);
+                view.Children.Add (visual);
+                view.Children.Add (lightingVisual);
             }
 
             catch (Exception ex)

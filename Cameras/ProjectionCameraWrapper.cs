@@ -7,245 +7,121 @@ using System.Windows.Input; // key event args
 using Common;
 using CommonMath;
 using WPF3D.Lighting;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WPF3D.Cameras
 {
     public class ProjectionCameraWrapper : DependencyObject
     {
-        static double DefaultPhi   = 60; // degrees
-        static double DefaultTheta = 40;
-        static double DefaultRho   = 10;
+        public ProjectionCamera Camera {get; protected set;} // this will be set to PerspectiveCamera or OrthographicCamera in ctor
 
-        // this will be set to PerspectiveCamera or OrthographicCamera in ctor
-        public ProjectionCamera Camera {get; protected set;}
+        // default position and orientation
+        const double InitialRho   = 1;
+        const double InitialPhi   = 60;
+        const double InitialTheta = 40;
+        const double InitialFOV   = 45;  // for perspective camera
+        const double InitialWidth = 20;  // for orthographic camera
+        const double InitialCenterX = 0;
+        const double InitialCenterY = 0;
+        const double InitialCenterZ = 0;
 
-        // Camera position relative to ViewCenter
-        Point3D RelPosition = new Point3D (DefaultRho * Math.Sin (DefaultPhi * Math.PI / 180) * Math.Cos (DefaultTheta * Math.PI / 180),
-                                           DefaultRho * Math.Sin (DefaultPhi * Math.PI / 180) * Math.Sin (DefaultTheta * Math.PI / 180),
-                                           DefaultRho * Math.Cos (DefaultPhi * Math.PI / 180));
+        // Camera Transforms 
+        AxisAngleRotation3D  Phi_AAR   = new AxisAngleRotation3D (new Vector3D (0, 1, 0), InitialPhi); 
+        AxisAngleRotation3D  Theta_AAR = new AxisAngleRotation3D (new Vector3D (0, 0, 1), InitialTheta);
+        AxisAngleRotation3D  Tilt_AAR  = new AxisAngleRotation3D (new Vector3D (0, 0, -1), 0);
+        AxisAngleRotation3D  Pan_AAR   = new AxisAngleRotation3D (new Vector3D (-1, 0, 0), 0);
+        TranslateTransform3D Translate = new TranslateTransform3D (InitialCenterX, InitialCenterY, InitialCenterZ); // translate camera "centered on" point
 
+        RotateTransform3D PanRotate; // need access to this one later, to change "center" fields. Others always
+                                     // centered on origin
 
+        Transform3DGroup cameraXforms = new Transform3DGroup ();
 
-        public double RelPositionRho
-        {
-            get {return ((Vector3D) RelPosition).Length;}
-            
-            set 
-            {
-                double multiplier = value / RelPositionRho;
-                RelPosition.X *= multiplier;
-                RelPosition.Y *= multiplier;
-                RelPosition.Z *= multiplier;
-                UpdateCamera ();
-            }
+        //***********************************************************************************************************
+
+        public ProjectionCameraWrapper (ProjectionType projection)
+        {   
+            if (projection == ProjectionType.Perspective) Camera = new PerspectiveCamera  (new Point3D (0, 0, InitialRho), new Vector3D (0, 0, -1), new Vector3D (-1, 0, 0), InitialFOV);
+            else                                          Camera = new OrthographicCamera (new Point3D (0, 0, InitialRho), new Vector3D (0, 0, -1), new Vector3D (-1, 0, 0), InitialWidth);
+
+            PanRotate = new RotateTransform3D (Pan_AAR, new Point3D (0, 0, InitialRho));
+
+            cameraXforms.Children.Add (new RotateTransform3D (Tilt_AAR)); 
+            cameraXforms.Children.Add (PanRotate);
+            cameraXforms.Children.Add (new RotateTransform3D (Phi_AAR)); 
+            cameraXforms.Children.Add (new RotateTransform3D (Theta_AAR));
+            cameraXforms.Children.Add (Translate);
+
+            Camera.Transform = cameraXforms;
         }
 
-        public double RelPositionTheta // degrees
-        {
-            get {return Math.Atan2 (RelPosition.Y, RelPosition.X) * 180 / Math.PI;}
+        //*********************************************************************************
 
-            set
-            {
-                double rho   = RelPositionRho;
-                double theta = value * Math.PI / 180;
-                double phi   = RelPositionPhi * Math.PI / 180;
-                RelPosition.X = rho * Math.Sin (phi) * Math.Cos (theta);
-                RelPosition.Y = rho * Math.Sin (phi) * Math.Sin (theta); ;
-                RelPosition.Z = rho * Math.Cos (phi);
-                UpdateCamera ();
-            }
-        }
-
-        public double RelPositionPhi // degrees
-        {
-            get
-            {
-                double XYLength = Math.Sqrt (RelPosition.X * RelPosition.X + RelPosition.Y * RelPosition.Y);
-                return  Math.Atan2 (XYLength, RelPosition.Z) * 180 / Math.PI;  
-            }
-
-            set
-            {
-                double rho   = RelPositionRho;
-                double theta = RelPositionTheta * Math.PI / 180;
-                double phi   = value * Math.PI / 180;
-                RelPosition.X = rho * Math.Sin (phi) * Math.Cos (theta);
-                RelPosition.Y = rho * Math.Sin (phi) * Math.Sin (theta); ;
-                RelPosition.Z = rho * Math.Cos (phi);
-                UpdateCamera ();
-            }
-        }
-
-        // Camera absolute position
         public Point3D AbsPosition
         {
-            get {return ViewCenter + (Vector3D) RelPosition;}
-            set {RelPosition = value - (Vector3D) ViewCenter; UpdateCamera ();}
-        }
+            get 
+            { 
+                Point3D pos = Camera.Position; // always along the Z axis, (0, 0, rho)
+                Transform3DGroup xform = new Transform3DGroup ();
+                xform.Children.Add (new RotateTransform3D (Phi_AAR));
+                xform.Children.Add (new RotateTransform3D (Theta_AAR)); 
 
-
-        private Point3D viewCenter = new Point3D (0, 0, 0);
-
-        public Point3D ViewCenter
-        {
-            get {return viewCenter;}
-            set {viewCenter = value; UpdateCamera ();}
-        }
-
-
-
-
-
-        //public double Distance
-        //{
-        //    get { return ((Vector3D)RelPosition).Length; }
-        //    set { }
-        //    //      set {RelPositionRho = value;}
-        //}
-
-        public Vector3D Direction {get {return (-1 * (Vector3D) RelPosition);}}    // ------------- needs setter?
-
-        public Vector3D Right
-        {
-            get
-            {
-                SphericalCoordPoint right = new SphericalCoordPoint (1, RelPositionTheta + 90, 90);
-                return (Vector3D) right.Cartesian;
-            }
-        }
-
-        public Vector3D Up {get {return Vector3D.CrossProduct ((Vector3D) RelPosition, Right);}}
-
-        //***************************************************************************************
-        //
-        // Lighting that moves with camera (like a headlamp)
-        //
-        Lights lighting = null; // optional, may remain null
-       
-
-
-        private void UpdateCamera ()
-        {
-            if (Camera != null)
-            {
-                Camera.Position      = AbsPosition;
-                Camera.LookDirection = Direction;
-                Camera.UpDirection   = Up;
-            }
-
-            if (lighting != null)
-                lighting.Direction = Direction;
-        }
-
-
-        //**************************************************************************************
-
-        public ProjectionCameraWrapper () : this (ProjectionType.Perspective)
-        {
-        }
-
-        public ProjectionCameraWrapper (ProjectionType projection, Lights lts = null)
-        {   
-            if (projection == ProjectionType.Perspective)
-                Camera = new PerspectiveCamera (AbsPosition, Direction, Up, FOV);   
-            else
-                Camera = new OrthographicCamera (AbsPosition, Direction, Up, Width);
-
-            Camera.NearPlaneDistance = 0.1;
-            Camera.FarPlaneDistance = 10000;
-
-            UpdateCamera ();
-            lighting = lts; 
-        }
-
-
-
-        //private void EL (string str)
-        //{
-        //    EventLog.WriteLine (str);
-        //    EventLog.WriteLine (string.Format ("AbsPosition {0:0.00}", AbsPosition));
-        //    EventLog.WriteLine (string.Format ("RelPosition {0:0.00}", RelPosition));
-        //    EventLog.WriteLine (string.Format ("ViewCenter  {0:0.00}", ViewCenter));
-        //}
-
-
-        public static readonly DependencyProperty PhiProperty = DependencyProperty.Register("Phi", typeof(double), typeof(ProjectionCameraWrapper),                
-                                                                                            new PropertyMetadata(DefaultPhi, PropertyChanged));
-        public double Phi
-        {
-            set {SetValue(PhiProperty, value);}
-            get {return (double)GetValue(PhiProperty);}
-        }
-
-        public static readonly DependencyProperty ThetaProperty = DependencyProperty.Register("Theta", typeof(double), typeof(ProjectionCameraWrapper),                
-                                                                                            new PropertyMetadata(DefaultTheta, PropertyChanged));
-        public double Theta
-        {
-            set {SetValue(ThetaProperty, value);}
-            get {return (double)GetValue(ThetaProperty);}
-        }
-
-        //**************************************************************************************
-
-        private static void PropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as ProjectionCameraWrapper).PropertyChanged (e);
-        }
-
-        private void PropertyChanged (DependencyPropertyChangedEventArgs args)
-        {
-            if (args.Property == PhiProperty)   ProcessNewPhi ();
-            if (args.Property == ThetaProperty) ProcessNewTheta ();
-        }
-
-        void ProcessNewPhi ()
-        {
-            RelPositionPhi = Phi;
-            UpdateCamera ();
-        }
-
-        //*********************************************************************************************
-
-        void ProcessNewTheta ()
-        {
-            RelPositionTheta = Theta;
-            UpdateCamera ();
-        }
-
-        double fov = 45;   // field of view, degrees, for perspective camera
-        double width = 7;  // for orthographic camera
-
-        public double FOV
-        {
-            get
-            {
-                return fov;
+                Point3D relPosition = xform.Transform (pos);
+                Point3D absPosition = relPosition + new Vector3D (Translate.OffsetX, Translate.OffsetY, Translate.OffsetZ);
+                return absPosition;
             }
 
             set
             {
-                fov = value;
-                
-                if (Camera is PerspectiveCamera)
-                    (Camera as PerspectiveCamera).FieldOfView = fov;
+                Point3D ptAbs = value;
+                Point3D ptRel = ptAbs - new Vector3D (Translate.OffsetX, Translate.OffsetY, Translate.OffsetZ);
+
+                PointSph pt = new PointSph (ptRel);
+
+                PanRotate.CenterZ = pt.Rho;
+                Camera.Position = new Point3D (0, 0, pt.Rho);
+                Theta_AAR.Angle = pt.Theta;
+                Phi_AAR.Angle   = pt.Phi;
             }
         }
 
-        //*********************************************************************************************
-
-        public double Width
+        public Point3D RelPosition
         {
-            get
+            get 
             {
-                return width;
+                Point3D pos = Camera.Position; // always along the Z axis, (0, 0, rho)
+                Transform3DGroup xform = new Transform3DGroup ();
+                xform.Children.Add (new RotateTransform3D (Phi_AAR));
+                xform.Children.Add (new RotateTransform3D (Theta_AAR)); 
+                Point3D relPosition = xform.Transform (pos);
+                return relPosition;
             }
 
             set
             {
-                width = value;
-                
-                if (Camera is OrthographicCamera)
-                    (Camera as OrthographicCamera).Width = width;
+                PointSph pt = new PointSph (value);
+                PanRotate.CenterZ = pt.Rho;
+                Camera.Position = new Point3D (0, 0, pt.Rho);
+                Theta_AAR.Angle = pt.Theta;
+                Phi_AAR.Angle = pt.Phi;
+            }
+        }
+
+        //*********************************************************************************
+
+        public Point3D CenterOn
+        {
+            get
+            {
+                return new Point3D (Translate.OffsetX, Translate.OffsetY, Translate.OffsetZ);
+            }
+
+            set
+            {
+                Translate.OffsetX = value.X;
+                Translate.OffsetY = value.Y;
+                Translate.OffsetZ = value.Z;
             }
         }
     }
