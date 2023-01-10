@@ -1,0 +1,96 @@
+﻿<Window x:Class="AxisRotationExperimenter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AxisRotationExperimenter"
+        mc:Ignorable="d"
+        Title="AxisAngleRotation3D Experimenter" Height="870" Width="900" Left="300" Top="40" Loaded="Window_Loaded">
+    <DockPanel>
+        <Border DockPanel.Dock="Left" BorderBrush="Green" BorderThickness="2">
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <local:SliderTextAndLabel FontSize="14" x:Name="rhoSlider"   Title="Rho"   Grid.Row="0" Grid.Column="0" Minimum="5"    Maximum="100" ValueChanged="rhoSlider_ValueChanged"/>
+                    <local:SliderTextAndLabel FontSize="14" x:Name="thetaSlider" Title="Theta" Grid.Row="0" Grid.Column="1" Minimum="-180" Maximum="180" ValueChanged="thetaSlider_ValueChanged"/>
+                    <local:SliderTextAndLabel FontSize="14" x:Name="phiSlider"   Title="Phi"   Grid.Row="0" Grid.Column="2" Minimum="0"    Maximum="180" ValueChanged="phiSlider_ValueChanged"/>
+                </Grid>
+
+                <Separator/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <local:SliderTextAndLabel FontSize="14" x:Name="fovSlider"   Title="FOV"   Grid.Row="0" Grid.Column="0" Minimum="3"    Maximum="120" Margin="0,10,0,0" ValueChanged="fovSlider_ValueChanged" Value="40"/>
+                    <local:SliderTextAndLabel FontSize="14" x:Name="panSlider"   Title="Pan"   Grid.Row="0" Grid.Column="1" Minimum="-180" Maximum="180" Margin="0,10,0,0" ValueChanged="panSlider_ValueChanged"/>
+                    <local:SliderTextAndLabel FontSize="14" x:Name="tiltSlider"  Title="Tilt"  Grid.Row="0" Grid.Column="2" Minimum="-180" Maximum="180" Margin="0,10,0,0" ValueChanged="tiltSlider_ValueChanged"/>
+                </Grid>
+                
+                <Separator/>
+                
+                <StackPanel Orientation="Vertical">
+                    <Label HorizontalAlignment="Center" FontSize="18">Camera Center</Label>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                        <Label FontSize="14">X</Label>
+                        <TextBox x:Name="centerX" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="center_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                        <Label FontSize="14">Y</Label>
+                        <TextBox x:Name="centerY" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="center_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                        <Label FontSize="14">Z</Label>
+                        <TextBox x:Name="centerZ" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="center_TextChanged"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Separator Margin="0,10,0,0"/>
+
+                <StackPanel Orientation="Vertical" Margin="0,0,20,0">
+                    <Label HorizontalAlignment="Center" FontSize="18">Camera Position</Label>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                        <Label FontSize="14">Rel X</Label>
+                        <TextBox x:Name="relPositionX" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="relPosition_TextChanged"/>
+                        <Label FontSize="14">Abs X</Label>
+                        <TextBox x:Name="absPositionX" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="absPosition_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                        <Label FontSize="14">Rel Y</Label>
+                        <TextBox x:Name="relPositionY" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="relPosition_TextChanged"/>
+                        <Label FontSize="14">Abs Y</Label>
+                        <TextBox x:Name="absPositionY" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="absPosition_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                        <Label FontSize="14">Rel Z</Label>
+                        <TextBox x:Name="relPositionZ" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="relPosition_TextChanged"/>
+                        <Label FontSize="14">Abs Z</Label>
+                        <TextBox x:Name="absPositionZ" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="absPosition_TextChanged"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+                
+        <Viewport3D x:Name="Viewport"/>
+    </DockPanel>
+</Window>
