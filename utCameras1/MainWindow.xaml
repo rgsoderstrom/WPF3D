@@ -9,9 +9,11 @@
     <DockPanel>
         <Border BorderBrush="Green" BorderThickness="2" DockPanel.Dock="Left">
             <StackPanel>
-                <Button Name="Button1" Margin="10, 10, 10, 0" FontSize="16" Click="Button1_Click">Button 1</Button>
-                <Button Name="Button2" Margin="10, 10, 10, 0" FontSize="16" Click="Button2_Click">Button 2</Button>
-                <Button Name="Button3" Margin="10, 10, 10, 0" FontSize="16" Click="Button3_Click">Button 3</Button>
+                <Button Name="Button1" Margin="10, 10, 10, 0" FontSize="16" Click="Button1_Click">Position</Button>
+                <Button Name="Button2" Margin="10, 10, 10, 0" FontSize="16" Click="Button2_Click">CenterOn</Button>
+                <Button Name="Button3" Margin="10, 10, 10, 0" FontSize="16" Click="Button3_Click">FOV</Button>
+                <Button Name="Button4" Margin="10, 10, 10, 0" FontSize="16" Click="Button4_Click">Theta and Phi</Button>
+                <Button Name="Button5" Margin="10, 10, 10, 0" FontSize="16" Click="Button5_Click">Rho</Button>
             </StackPanel>
         </Border>
 

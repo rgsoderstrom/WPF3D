@@ -50,12 +50,6 @@ namespace utCameras1
 
                 view.Children.Add (visual0);
                 view.Children.Add (lightingVisual);
-
-                Point3D pt = cameraWrapper.AbsPosition;
-                pt.X *= 10;
-                pt.Y *= 10;
-                pt.Z *= 10;
-                cameraWrapper.AbsPosition = pt;
             }
 
             catch (Exception ex)
@@ -66,7 +60,14 @@ namespace utCameras1
 
         private void Button1_Click (object sender, RoutedEventArgs e)
         {
-            cameraWrapper.RelPosition = new Point3D (6, 8, 10);
+            Point3D pt = cameraWrapper.RelPosition;
+            pt.X *= 2.5;
+            pt.Y *= 2;
+            pt.Z *= 1.5;
+            cameraWrapper.RelPosition = pt;
+
+            //Console.WriteLine ("camera rel pos: {0:0.0}", pt);
+
         }
 
         private void Button2_Click (object sender, RoutedEventArgs e)
@@ -76,7 +77,24 @@ namespace utCameras1
 
         private void Button3_Click (object sender, RoutedEventArgs e)
         {
+            if (cameraWrapper.FOV < 1)
+                cameraWrapper.FOV = 45;
+            else
+                cameraWrapper.FOV /= 2;
+        }
 
+        private void Button4_Click (object sender, RoutedEventArgs e)
+        {
+            cameraWrapper.Theta -= 2;
+            cameraWrapper.Phi -= 2;
+        }
+
+        private void Button5_Click (object sender, RoutedEventArgs e)
+        {
+            ////if (cameraWrapper.Rho > 5)
+            ////    cameraWrapper.Rho -= 2;
+            ////else
+            ////    cameraWrapper.Rho = 30;
         }
     }
 }
