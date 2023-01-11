@@ -56,6 +56,108 @@ namespace WPF3D.Cameras
             Camera.Transform = cameraXforms;
         }
 
+        //**************************************************************************************
+
+        // dependency properties
+
+        public static readonly DependencyProperty PhiProperty = DependencyProperty.Register("Phi", typeof(double), typeof(ProjectionCameraWrapper),                
+                                                                                            new PropertyMetadata(InitialPhi, PropertyChanged));
+        public double Phi
+        {
+            set {SetValue(PhiProperty, value);}
+            get {return (double)GetValue(PhiProperty);}
+        }
+
+        public static readonly DependencyProperty ThetaProperty = DependencyProperty.Register("Theta", typeof(double), typeof(ProjectionCameraWrapper),                
+                                                                                            new PropertyMetadata(InitialTheta, PropertyChanged));
+        public double Theta
+        {
+            set {SetValue(ThetaProperty, value);}
+            get {return (double)GetValue(ThetaProperty);}
+        }
+
+        public static readonly DependencyProperty RhoProperty = DependencyProperty.Register ("Rho", typeof (double), typeof (ProjectionCameraWrapper),
+                                                                                            new PropertyMetadata (InitialRho, PropertyChanged));
+        public double Rho
+        {
+            set { SetValue (RhoProperty, value); }
+            get { return (double)GetValue (RhoProperty); }
+        }
+
+        //**************************************************************************************
+
+        private static void PropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as ProjectionCameraWrapper).PropertyChanged (e);
+        }
+
+        private void PropertyChanged (DependencyPropertyChangedEventArgs args)
+        {
+            if (args.Property == PhiProperty)   ProcessNewPhi ();
+            if (args.Property == ThetaProperty) ProcessNewTheta ();
+            if (args.Property == RhoProperty)   ProcessNewRho ();
+        }
+
+        void ProcessNewPhi ()
+        {
+            Phi_AAR.Angle = Phi;
+        }
+
+        void ProcessNewTheta ()
+        {
+            Theta_AAR.Angle = Theta;
+        }
+
+        void ProcessNewRho ()
+        {
+            Camera.Position = new Point3D (0, 0, Rho);
+            PanRotate.CenterZ = Rho;
+        }
+
+        //*********************************************************************************
+
+        public double FOV
+        {
+            get {if (Camera is PerspectiveCamera) return (Camera as PerspectiveCamera).FieldOfView;  else throw new Exception ("Not a Perspective Camera"); }
+            set {if (Camera is PerspectiveCamera) (Camera as PerspectiveCamera).FieldOfView = value; else throw new Exception ("Not a Perspective Camera"); }
+        }
+
+        public double Width
+        {
+            get {if (Camera is OrthographicCamera) return (Camera as OrthographicCamera).Width;  else throw new Exception ("Not an Orthographic Camera"); }
+            set {if (Camera is OrthographicCamera) (Camera as OrthographicCamera).Width = value; else throw new Exception ("Not an Orthographic Camera"); }
+        }
+
+        //*********************************************************************************
+
+        // Up and Right ignore the tilt & pan angles
+
+        public Vector3D Up
+        {
+            get
+            {
+                Vector3D InitialUp = new Vector3D (-1, 0, 0);
+                Transform3DGroup xform = new Transform3DGroup ();
+                xform.Children.Add (new RotateTransform3D (Phi_AAR));
+                xform.Children.Add (new RotateTransform3D (Theta_AAR)); 
+
+                return xform.Transform (InitialUp);
+            }
+        }
+
+        public Vector3D Right
+        {
+            get
+            {
+                Vector3D InitialRight = new Vector3D (0, 1, 0);
+                Transform3DGroup xform = new Transform3DGroup ();
+                xform.Children.Add (new RotateTransform3D (Phi_AAR));
+                xform.Children.Add (new RotateTransform3D (Theta_AAR)); 
+
+                return xform.Transform (InitialRight);
+            }
+        }
+
         //*********************************************************************************
 
         public Point3D AbsPosition
@@ -79,10 +181,9 @@ namespace WPF3D.Cameras
 
                 PointSph pt = new PointSph (ptRel);
 
-                PanRotate.CenterZ = pt.Rho;
-                Camera.Position = new Point3D (0, 0, pt.Rho);
-                Theta_AAR.Angle = pt.Theta;
-                Phi_AAR.Angle   = pt.Phi;
+                Rho = pt.Rho;
+                Theta = pt.Theta;
+                Phi = pt.Phi;
             }
         }
 
@@ -101,10 +202,10 @@ namespace WPF3D.Cameras
             set
             {
                 PointSph pt = new PointSph (value);
-                PanRotate.CenterZ = pt.Rho;
-                Camera.Position = new Point3D (0, 0, pt.Rho);
-                Theta_AAR.Angle = pt.Theta;
-                Phi_AAR.Angle = pt.Phi;
+
+                Rho = pt.Rho;
+                Theta = pt.Theta;
+                Phi = pt.Phi;
             }
         }
 
