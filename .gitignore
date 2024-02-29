@@ -1,0 +1,9 @@
+.vs/
+.editorconfig
+bin/
+obj/
+packages/
+ConvexHull/
+Petzold/
+log.txt
+Settings.*

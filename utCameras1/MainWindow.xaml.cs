@@ -72,7 +72,9 @@ namespace utCameras1
 
         private void Button2_Click (object sender, RoutedEventArgs e)
         {
-            cameraWrapper.CenterOn = new Point3D (1, 1, 1);
+            Point3D pt = cameraWrapper.CenterOn;
+            pt += new Vector3D (0.5, 0.7, 0.9);
+            cameraWrapper.CenterOn = pt;
         }
 
         private void Button3_Click (object sender, RoutedEventArgs e)

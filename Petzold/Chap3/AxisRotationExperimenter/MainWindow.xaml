@@ -70,21 +70,21 @@
                     <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
                         <Label FontSize="14">Rel X</Label>
                         <TextBox x:Name="relPositionX" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="relPosition_TextChanged"/>
-                        <Label FontSize="14">Abs X</Label>
+                        <Label FontSize="14" Margin="8,0,0,0">Abs X</Label>
                         <TextBox x:Name="absPositionX" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="absPosition_TextChanged"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
                         <Label FontSize="14">Rel Y</Label>
                         <TextBox x:Name="relPositionY" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="relPosition_TextChanged"/>
-                        <Label FontSize="14">Abs Y</Label>
+                        <Label FontSize="14" Margin="8,0,0,0">Abs Y</Label>
                         <TextBox x:Name="absPositionY" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="absPosition_TextChanged"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
                         <Label FontSize="14">Rel Z</Label>
                         <TextBox x:Name="relPositionZ" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="relPosition_TextChanged"/>
-                        <Label FontSize="14">Abs Z</Label>
+                        <Label FontSize="14" Margin="8,0,0,0">Abs Z</Label>
                         <TextBox x:Name="absPositionZ" FontSize="14" MinWidth="60" HorizontalContentAlignment="Center" TextChanged="absPosition_TextChanged"/>
                     </StackPanel>
                 </StackPanel>

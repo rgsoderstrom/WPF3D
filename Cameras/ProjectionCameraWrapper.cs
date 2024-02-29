@@ -215,11 +215,13 @@ namespace WPF3D.Cameras
         {
             get
             {
+                //EventLog.WriteLine ("Camera Wrapper reporting Center to " + String.Format ("{0:0.0}", new Point3D (Translate.OffsetX, Translate.OffsetY, Translate.OffsetZ)));
                 return new Point3D (Translate.OffsetX, Translate.OffsetY, Translate.OffsetZ);
             }
 
             set
             {
+                //EventLog.WriteLine ("Camera Wrapper setting Center to " + String.Format ("{0:0.0}", value));
                 Translate.OffsetX = value.X;
                 Translate.OffsetY = value.Y;
                 Translate.OffsetZ = value.Z;

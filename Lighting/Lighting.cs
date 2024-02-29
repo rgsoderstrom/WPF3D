@@ -28,8 +28,8 @@ namespace WPF3D.Lighting
         }
 
         AmbientLight     ambient = new AmbientLight     ((Color)ColorConverter.ConvertFromString ("#505050"));
-        DirectionalLight dir1    = new DirectionalLight ((Color)ColorConverter.ConvertFromString ("#a0a0a0"), new Vector3D (0.6, 0.6, -0.6));
-        DirectionalLight dir2    = new DirectionalLight ((Color)ColorConverter.ConvertFromString ("#a0a0a0"), new Vector3D (1, 1, 1)); // direction set by client
+        DirectionalLight dir1    = new DirectionalLight ((Color)ColorConverter.ConvertFromString ("#a0a0a0"), new Vector3D (-1, -1, -1));
+        DirectionalLight dir2    = new DirectionalLight ((Color)ColorConverter.ConvertFromString ("#a0a0a0"), new Vector3D (0, 0, -1)); // direction set by client
 
         public Lights () : this (null)
         {
