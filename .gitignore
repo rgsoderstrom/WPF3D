@@ -5,5 +5,5 @@ obj/
 packages/
 ConvexHull/
 Petzold/
-Settings.*
 log.txt
+
